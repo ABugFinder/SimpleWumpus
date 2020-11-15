@@ -17,10 +17,12 @@ public class Celda {
     private int status = 0;
     
     private final int TAM_TABLERO = 8;
-    private final Celda [][] MAPA = new Celda [TAM_TABLERO][TAM_TABLERO];
+    private Celda [][] mapa = new Celda [TAM_TABLERO][TAM_TABLERO];
     
-    final int N_WUMPUS = 1, N_TREASURE = 1, N_TRAP = 4, N_HUNTER = 1;
-    final int MIN_EMPITY_SPACE = (TAM_TABLERO*TAM_TABLERO)/2;
+    int contWumpus = 0, contTreasure = 0, contTrap = 0, contHunter = 0;
+    
+    final int N_WUMPUS = 1, N_TREASURE = 1, N_TRAP = TAM_TABLERO, N_HUNTER = 1;
+    //final int MIN_EMPITY_SPACE = (TAM_TABLERO*TAM_TABLERO)/2;
     
     //Constructor
     public Celda(int valor, int status ) {
@@ -38,53 +40,95 @@ public class Celda {
         for(int i = 0; i < TAM_TABLERO; i++){
             for(int j = 0; j < TAM_TABLERO; j++){
                 
-                //MAPA [i][j] = new Celda(setRandomNumber(0, 2), 1);
-                //System.out.print("[" + MAPA[i][j].valor + ", " + MAPA[i][j].status + "], "); // Mostrar todo
+                //mapa [i][j] = new Celda(setRandomNumber(0, 2), 1);
+                //System.out.print("[" + mapa[i][j].valor + ", " + mapa[i][j].status + "], "); // Mostrar todo
                 rellenarEntidades(i,j);
-                System.out.print("[" + MAPA[i][j].valor + "], "); //Mostrar que hay en casilla
+                //Mostrar en consola qué hay en casilla
+                if(j == TAM_TABLERO-1){
+                    //System.out.print("[" + mapa[i][j].valor + "]\n");
+                    System.out.print(mapa[i][j].valor + "\n");
+                } else {
+                    //System.out.print("[" + mapa[i][j].valor + "], ");
+                    System.out.print(mapa[i][j].valor + "  ");
+                }
+
+                //Validando entidades perdidas al final de mapa
+                if(i == TAM_TABLERO-1 && j == TAM_TABLERO-1){
+                    for(int k = 0; k <= 4; k++) {
+                        validarEntedadesPerdidas(k);
+                    }
+                    System.out.println("-----------------------\n"
+                            + "Espacio libre = 0\n"
+                            + "Cazador = 1\n"
+                            + "Tesoro = 2\n"
+                            + "Trampa = 3\n"
+                            + "Monstruo = 4\n-----------------------");
+                    System.out.println("Cazadores: " + contHunter + "\n"
+                            + "Wumpus: " + contWumpus + "\n"
+                            + "Tesoros: " + contTreasure + "\n"
+                            + "Trampas: " + contTrap + "\n-----------------------");
+                }
             }
-            System.out.println("");
         }
+        
+
     }
-    int contWumpus = 0, contTreasure = 0, contTrap = 0, contHunter = 0;
-    // Esta función revisa las entidades que se producen para poder validarlas y distribuirlas de mejor manera
-    // para la generación del mapa
+
+    // Esta función revisa las entidades que se producen para poder validarlas y distribuirlas de
+    // mejor manera para la generación del mapa
     public void rellenarEntidades(int i, int j){
         
-        MAPA [i][j] = new Celda(setRandomNumber(0, 5), 1);
+        mapa [i][j] = new Celda(setRandomNumber(0, 5), 1);
                 
-        switch (MAPA[i][j].valor) {
+        switch (mapa[i][j].valor) {
             
             case 1: // Entidad que será validadda según los límites asignados
-                if(contHunter <= 0) {
-                    MAPA [i][j].valor = 1;
+                if(probailidadDeEntidad() == 1){
+                    if(contHunter < N_HUNTER) {
+                    mapa [i][j].valor = 1;
                     contHunter++;
-                } else if (contHunter >= N_HUNTER){
-                    MAPA [i][j].valor = 0;
+                    } else if (contHunter >= N_HUNTER){
+                        mapa [i][j].valor = 0;
+                    }
+                } else {
+                    mapa [i][j].valor = 0;
                 }
+                
                 break;
             case 2: // Limitando Tesoro
-                if(contTrap <= 0) {
-                    MAPA [i][j].valor = 2;
-                    contTreasure++;
-                } else if (contTreasure >= N_TREASURE){
-                    MAPA [i][j].valor = 0;
+                if(probailidadDeEntidad() == 1) {
+                    if(contTreasure < N_TREASURE) {
+                        mapa [i][j].valor = 2;
+                        contTreasure++;
+                    } else if (contTreasure >= N_TREASURE){
+                        mapa [i][j].valor = 0;
+                    }
+                } else {
+                    mapa [i][j].valor = 0;
                 }
                 break;
             case 3: // Limitando Hoyo
-                if(contTrap <= 0) {
-                    MAPA [i][j].valor = 3;
-                    contTrap++;
-                } else if (contTrap >= N_TRAP){
-                    MAPA [i][j].valor = 0;
+                if(probailidadDeTrampa() == 1) {
+                    if(contTrap < N_TRAP) {
+                        mapa [i][j].valor = 3;
+                        contTrap++;
+                    } else if (contTrap >= N_TRAP){
+                        mapa [i][j].valor = 0;
+                    }
+                } else {
+                    mapa [i][j].valor = 0;
                 }
                 break;
             case 4: // Limitando Wumpus
-                if(contWumpus <= 0) {
-                    MAPA [i][j].valor = 4;
-                    contWumpus++;
-                } else if (contWumpus >= N_WUMPUS){
-                    MAPA [i][j].valor = 0;
+                if (probailidadDeEntidad() == 1) {
+                    if(contWumpus <= 0) {
+                        mapa [i][j].valor = 4;
+                        contWumpus++;
+                    } else if (contWumpus >= N_WUMPUS){
+                        mapa [i][j].valor = 0;
+                    }
+                } else {
+                    mapa [i][j].valor = 0;
                 }
                 break;
             case 5:
@@ -92,7 +136,7 @@ public class Celda {
             case 6:
                 break;
             case 7:
-                //MAPA[i][j].valor = 1777;
+                //mapa[i][j].valor = 1777;
                 break;
             default:
                 //Aquí llega un valor que no puede llegar => Null
@@ -102,6 +146,55 @@ public class Celda {
     
     public int setRandomNumber(int min, int max) {
         return (int) ((Math.random() * (max - min)) + min);
+    }
+    
+    // Método para mejorar la distribución de entidades por el mapa y que no se creen todas
+    // en las primeras filas de la matriz
+    public int probailidadDeEntidad() {
+        int probabilidad = setRandomNumber(0, 11);
+        
+        if(probabilidad >= 9){
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+    public int probailidadDeTrampa() {
+        int probabilidad = setRandomNumber(0, 4);
+        
+        if(probabilidad > 1){
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+    
+    public void validarEntedadesPerdidas(int entidad){
+        // Si no existe un hunter se seteará un mapa específico
+        if (entidad == 1 && contHunter == 0){ // Caso sin cazador
+            //Funcion para borrar matriz y crear un nuevo mapa
+            System.out.println("Mapa Nuevo - Hunter Validado");
+            contWumpus = 0; contTreasure = 0; contTrap = 0; contHunter = 0;
+            crearMapa();
+        }
+        if (entidad == 2 && contTreasure == 0){ // Caso sin tesoro
+            System.out.println("Mapa Nuevo - Tesoro Validado");
+            contWumpus = 0; contTreasure = 0; contTrap = 0; contHunter = 0;
+            crearMapa();
+        }
+        if (entidad == 4 && contWumpus == 0){ // Caso sin wumpus
+            System.out.println("Mapa Nuevo - Wumpus Validado");
+            contWumpus = 0; contTreasure = 0; contTrap = 0; contHunter = 0;
+            crearMapa();
+        }
+    }
+    
+    public void borrarTablero(){
+        
+    }
+    
+    public void resetearValoresIniciales(){
+        
     }
     
     
