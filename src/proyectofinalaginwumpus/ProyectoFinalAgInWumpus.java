@@ -4,22 +4,24 @@
  * and open the template in the editor.
  */
 package proyectofinalaginwumpus;
+import proyectofinalaginwumpus.Celda;
 
 /**
  *
  * @author bicho
  */
 public class ProyectoFinalAgInWumpus {
-
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        Celda celda = new Celda();
+        
+        celda.crearMapa();
+        
     }
-    
-    private int [][] mapa = new int [8][8];
-    
 }
 
 
