@@ -13,32 +13,29 @@ public class Celda {
     
     //Variables globales
     private int valor;
-    //private boolean isWumpus = false, isHunter = false, isTreasure = false;
     private int status = 0;
     private int advertencia = 0;
-    
-    private final int TAM_TABLERO = 8;
+    private final int TAM_TABLERO = 6; // Se recomienda valores menores a 100
     private Celda [][] mapa = new Celda [TAM_TABLERO][TAM_TABLERO];
-    //Guardar en Memoria una matriz del mapa mental
-    // Funcionar normal
-    // Cuando acabe, trazar una ruta óptima que sea paralela al resultado
-    // Asignar vidas
-    
     int contWumpus = 0, contTreasure = 0, contTrap = 0, contHunter = 0;
+    double mitadTablero = Math.pow(TAM_TABLERO, TAM_TABLERO)/2;
+    final int N_WUMPUS = 1, N_TREASURE = 1, N_TRAP = (int)mitadTablero, N_HUNTER = 1;
     
-    final int N_WUMPUS = 1, N_TREASURE = 1, N_TRAP = TAM_TABLERO, N_HUNTER = 1;
+    // TODO List
+    // Guardar en Memoria una matriz del mapa mental
+    // Funcionar normal
+    // Cuando acabe, trazar una ruta óptima que sea paralela al resultado (a estrella)
+    // Asignar vidas = 5
     
     //Constructor
     public Celda(int valor, int status, int advertencia) {
-        
-        this.valor = valor; //Vacío = 0, Cazador = 1, Tesoro = 2, Hoyo = 3, Wumpus 4, Brillo = 5,
-                            //Viento = 6, Hedor = 7
+        //Vacío = 0, Cazador = 1, Tesoro = 2, Hoyo = 3, Wumpus 4, Brillo = 5, Viento = 6, Hedor = 7
+        this.valor = valor; 
         this.status = status; //Descubierto = 1, No decubierto = 0
         this.advertencia = advertencia;
     }
     
     public Celda(){}
-    
     
     public void crearCeldas(){
         for(int i = 0; i < TAM_TABLERO; i++){
@@ -52,11 +49,7 @@ public class Celda {
         crearCeldas();
         for(int i = 0; i < TAM_TABLERO; i++){
             for(int j = 0; j < TAM_TABLERO; j++){
-                
-                //mapa [i][j] =  Celda(setRandomNumber(0, 2), 1);
-                //System.out.print("[" + mapa[i][j].valor + ", " + mapa[i][j].status + "], "); // Mostrar todo
                 rellenarEntidades(i,j);
-
                 //Validando entidades perdidas al final de mapa
                 if(i == TAM_TABLERO-1 && j == TAM_TABLERO-1){
                     for(int k = 0; k <= 4; k++) {
@@ -81,6 +74,8 @@ public class Celda {
     public void imprimirMapa() {
         for(int i = 0; i < TAM_TABLERO; i++){
             for(int j = 0; j < TAM_TABLERO; j++){
+                //System.out.print("[" + mapa[i][j].valor + ", " + mapa[i][j].status + ", " + mapa[i][j].advertencia + "] "); // Mostrar todo
+                
                 //Mostrar en consola qué hay en casilla
                 if(j == TAM_TABLERO-1){
                     //System.out.print("[" + mapa[i][j].valor + "]\n");
@@ -95,14 +90,8 @@ public class Celda {
 
     // Esta función revisa las entidades que se producen para poder validarlas y distribuirlas de
     // mejor manera para la generación del mapa
-    
-    boolean isNext = false;
-    boolean isMuleta = false;
-    
     public void rellenarEntidades(int i, int j){
-        
         switch (mapa[i][j].valor) {
-            
             case 0: break;
             
             case 1: // Limitando Cazador
@@ -116,8 +105,8 @@ public class Celda {
                 } else {
                     mapa [i][j].valor = 0;
                 }
-                
                 break;
+                
             case 2: // Limitando Tesoro
                 if(probailidadDeEntidad() == 1) {
                     if(contTreasure < N_TREASURE) {
@@ -131,6 +120,7 @@ public class Celda {
                     mapa [i][j].valor = 0;
                 }
                 break;
+                
             case 3: // Limitando Hoyo
                 if(probailidadDeTrampa() == 1) {
                     if(contTrap < N_TRAP) {
@@ -144,6 +134,7 @@ public class Celda {
                     mapa [i][j].valor = 0;
                 }
                 break;
+                
             case 4: // Limitando Wumpus
                 if (probailidadDeEntidad() == 1) {
                     if(contWumpus <= 0) {
@@ -157,6 +148,7 @@ public class Celda {
                     mapa [i][j].valor = 0;
                 }
                 break;
+                
             default:
                 //Aquí llega un valor que no puede llegar => Null
                 System.out.println("Ha habido un problema, saludos cordiales.");
@@ -171,9 +163,8 @@ public class Celda {
     // Método para mejorar la distribución de entidades por el mapa y que no se creen todas
     // en las primeras filas de la matriz
     public int probailidadDeEntidad() {
-        int probabilidad = setRandomNumber(0, 11);
-        
-        if(probabilidad >= 9){
+        int probabilidad = setRandomNumber(0, 15);
+        if(probabilidad >= 12){
             return 1;
         } else {
             return 0;
@@ -181,9 +172,9 @@ public class Celda {
     }
     
     public int probailidadDeTrampa() {
-        int probabilidad = setRandomNumber(0, 4);
-        
-        if(probabilidad > 1){
+        //A mayor rango máximo, mayor cantidad de trampas
+        int probabilidad = setRandomNumber(0, 3);
+        if(probabilidad >= 1){
             return 1;
         } else {
             return 0;
@@ -209,21 +200,6 @@ public class Celda {
             crearMapa();
         }
     }
-    /*
-    public boolean casillaArriba(int y, Celda[][] mapa){
-        boolean hayArriba = false;
-        if (mapa != null && y >= 0 && y < mapa.length){
-            if ( mapa[y] != null ){
-                System.out.println("hay arriba");
-                hayArriba = true;
-                return hayArriba;
-            }
-        } else {
-            System.out.println("No hay arriba");
-            return hayArriba;
-        }
-        return hayArriba;
-    }*/
     
     public void agregarAdyacentes(int i, int j, int adver){
         if(i-1 >= 0){ //si Arriba existe
@@ -248,13 +224,4 @@ public class Celda {
             mapa[i][j+1].advertencia = adver;
         }
     }
-    public void borrarTablero(){
-        
-    }
-    
-    public void resetearValoresIniciales(){
-        
-    }
-    
-    
 }
