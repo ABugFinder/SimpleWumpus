@@ -12,14 +12,15 @@ package proyectofinalaginwumpus;
 public class Celda {
     
     //Variables globales
-    private int valor;
-    private int status = 0;
-    private int advertencia = 0;
+    private int valor, status, advertencia, cordX, cordY;
+    private int contWumpus = 0, contTreasure = 0, contTrap = 0, contHunter = 0;
     private final int TAM_TABLERO = 6; // Se recomienda valores menores a 100
     private Celda [][] mapa = new Celda [TAM_TABLERO][TAM_TABLERO];
-    int contWumpus = 0, contTreasure = 0, contTrap = 0, contHunter = 0;
+    private Celda [][] mapaMental = new Celda [TAM_TABLERO][TAM_TABLERO];
+    
     double mitadTablero = Math.pow(TAM_TABLERO, TAM_TABLERO)/2;
     final int N_WUMPUS = 1, N_TREASURE = 1, N_TRAP = (int)mitadTablero, N_HUNTER = 1;
+    int vidas = 5;
     
     // TODO List
     // Guardar en Memoria una matriz del mapa mental
@@ -28,11 +29,13 @@ public class Celda {
     // Asignar vidas = 5
     
     //Constructor
-    public Celda(int valor, int status, int advertencia) {
+    public Celda(int valor, int status, int advertencia, int cordX, int cordY) {
         //Vacío = 0, Cazador = 1, Tesoro = 2, Hoyo = 3, Wumpus 4, Brillo = 5, Viento = 6, Hedor = 7
         this.valor = valor; 
         this.status = status; //Descubierto = 1, No decubierto = 0
         this.advertencia = advertencia;
+        this.cordX = cordX;
+        this.cordY = cordY;
     }
     
     public Celda(){}
@@ -40,7 +43,8 @@ public class Celda {
     public void crearCeldas(){
         for(int i = 0; i < TAM_TABLERO; i++){
             for(int j = 0; j < TAM_TABLERO; j++){
-                mapa [i][j] = new Celda(setRandomNumber(0, 5), 0, 0);
+                mapa [i][j] = new Celda(setRandomNumber(0, 5), 0, 0,i,j);
+                mapaMental [i][j] = new Celda(0, 0, 0, 0, 0);
             }
         }
     }
@@ -75,7 +79,6 @@ public class Celda {
         for(int i = 0; i < TAM_TABLERO; i++){
             for(int j = 0; j < TAM_TABLERO; j++){
                 //System.out.print("[" + mapa[i][j].valor + ", " + mapa[i][j].status + ", " + mapa[i][j].advertencia + "] "); // Mostrar todo
-                
                 //Mostrar en consola qué hay en casilla
                 if(j == TAM_TABLERO-1){
                     //System.out.print("[" + mapa[i][j].valor + "]\n");
@@ -98,6 +101,7 @@ public class Celda {
                 if(probailidadDeEntidad() == 1){
                     if(contHunter < N_HUNTER) {
                         mapa [i][j].valor = 1;
+                        guardarPosInicial(i, j);
                         contHunter++;
                     } else if (contHunter >= N_HUNTER){
                         mapa [i][j].valor = 0;
@@ -181,6 +185,7 @@ public class Celda {
         }
     }
     
+    // Crea un nuevo mapa en caso de haberse generado mal
     public void validarEntedadesPerdidas(int entidad){
         // Si no existe un hunter se seteará un mapa específico
         if (entidad == 1 && contHunter == 0){ // Caso sin cazador
@@ -200,7 +205,7 @@ public class Celda {
             crearMapa();
         }
     }
-    
+    // Valida los avisos de las entidades en sus posiciones adyacentes
     public void agregarAdyacentes(int i, int j, int adver){
         if(i-1 >= 0){ //si Arriba existe
             //System.out.println("antes: " + mapa[i-1][j].valor);
@@ -224,4 +229,21 @@ public class Celda {
             mapa[i][j+1].advertencia = adver;
         }
     }
+    
+    public void guardarPosInicial(int i, int j){
+        mapaMental[i][j].cordX = j;
+        mapaMental[i][j].cordY = i;
+        System.out.println("Mapa Mental - PosActual de 1"
+                + "\nX:  " + mapaMental[i][j].cordX + "\nY: " + mapaMental[i][j].cordY);
+    }
+    /*
+    public void moverDerecha(int x, int y){
+        if(mapaMental[x][y].cordX++  < TAM_TABLERO){ // si Derecha existe
+            mapaMental[x+1][y].cordX++;
+            mapa[x][y].valor = 0;
+            mapa[x+1][y].valor = 1;
+            System.out.println("\nNos movimos a la derecha, siiiii <3");
+        }
+    }*/
+    
 }
