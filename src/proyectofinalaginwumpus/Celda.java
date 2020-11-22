@@ -22,9 +22,12 @@ public class Celda {
     final int N_WUMPUS = 1, N_TREASURE = 1, N_TRAP = (int)mitadTablero, N_HUNTER = 1;
     int vidas = 5;
     
+    int xActual = 0, yActual = 0;
+    
     // TODO List
     // Guardar en Memoria una matriz del mapa mental
     // Funcionar normal
+    // Huerística
     // Cuando acabe, trazar una ruta óptima que sea paralela al resultado (a estrella)
     // Asignar vidas = 5
     
@@ -54,26 +57,40 @@ public class Celda {
         for(int i = 0; i < TAM_TABLERO; i++){
             for(int j = 0; j < TAM_TABLERO; j++){
                 rellenarEntidades(i,j);
-                //Validando entidades perdidas al final de mapa
-                if(i == TAM_TABLERO-1 && j == TAM_TABLERO-1){
-                    for(int k = 0; k <= 4; k++) {
-                        validarEntedadesPerdidas(k);
-                    }
-                    System.out.println("-----------------------\n"
-                            + "Espacio libre = 0\n"
-                            + "Cazador = 1\n"
-                            + "Tesoro = 2\n"
-                            + "Trampa = 3\n"
-                            + "Monstruo = 4\n-----------------------");
-                    System.out.println("Cazadores: " + contHunter + "\n"
-                            + "Wumpus: " + contWumpus + "\n"
-                            + "Tesoros: " + contTreasure + "\n"
-                            + "Trampas: " + contTrap + "\n-----------------------");
-                }
             }
         }
-        imprimirMapa();
+        //Validar mapa por si no fue correctamente construido
+        if(contHunter==0 || contTreasure == 0 || contWumpus == 0){
+            resetearPartida();
+            //imprimirMapa();
+            //imprimirDatos();
+            //System.out.println("Se reinició el mapa");
+        } else {
+            imprimirMapa();
+            imprimirDatos();
+        }
+        imprimirPosActualHunter();
     }
+    
+    public void controlarHunter(){
+        moverCazador(1);
+        moverCazador(2);
+        moverCazador(3);
+        moverCazador(4);
+    }
+    
+    public void imprimirDatos(){
+        System.out.println("-----------------------\n"
+                    + "Espacio libre = 0\n"
+                    + "Cazador = 1\n"
+                    + "Tesoro = 2\n"
+                    + "Trampa = 3\n"
+                    + "Monstruo = 4\n-----------------------");
+            System.out.println("Cazadores: " + contHunter + "\n"
+            + "Wumpus: " + contWumpus + "\n"
+            + "Tesoros: " + contTreasure + "\n"
+            + "Trampas: " + contTrap + "\n-----------------------");
+    }   
     
     public void imprimirMapa() {
         for(int i = 0; i < TAM_TABLERO; i++){
@@ -83,9 +100,11 @@ public class Celda {
                 if(j == TAM_TABLERO-1){
                     //System.out.print("[" + mapa[i][j].valor + "]\n");
                     System.out.print(mapa[i][j].valor + "\n");
+                    //System.out.println("i: " + i + " j: " + j);
                 } else {
                     //System.out.print("[" + mapa[i][j].valor + "], ");
                     System.out.print(mapa[i][j].valor + "  ");
+                    //System.out.println("i: " + i + " j: " + j);
                 }
             }
         }
@@ -186,25 +205,38 @@ public class Celda {
     }
     
     // Crea un nuevo mapa en caso de haberse generado mal
+    /*
     public void validarEntedadesPerdidas(int entidad){
         // Si no existe un hunter se seteará un mapa específico
         if (entidad == 1 && contHunter == 0){ // Caso sin cazador
             //Funcion para borrar matriz y crear un nuevo mapa
             System.out.println("Mapa Nuevo - Hunter Validado");
-            contWumpus = 0; contTreasure = 0; contTrap = 0; contHunter = 0;
-            crearMapa();
-            
-        } else if (entidad == 2 && contTreasure == 0){ // Caso sin tesoro
+            resetearPartida();
+        } else
+        if (entidad == 2 && contTreasure == 0){ // Caso sin tesoro
             System.out.println("Mapa Nuevo - Tesoro Validado");
-            contWumpus = 0; contTreasure = 0; contTrap = 0; contHunter = 0;
-            crearMapa();
-            
-        } else if (entidad == 4 && contWumpus == 0){ // Caso sin wumpus
+            resetearPartida();
+        } else 
+        if (entidad == 4 && contWumpus == 0){ // Caso sin wumpus
             System.out.println("Mapa Nuevo - Wumpus Validado");
-            contWumpus = 0; contTreasure = 0; contTrap = 0; contHunter = 0;
-            crearMapa();
+            resetearPartida();
         }
     }
+    */
+    public void resetearPartida(){
+        contWumpus = 0; contTreasure = 0; contTrap = 0; contHunter = 0;
+        xActual = 0; yActual = 0;
+        for(int i = 0; i < TAM_TABLERO; i++){
+            for(int j = 0; j < TAM_TABLERO; j++){
+                mapa [i][j].valor = 0;
+                mapa [i][j].status = 0;
+                mapa [i][j].advertencia = 0;
+                mapaMental [i][j] = null;
+            }
+        }
+        crearMapa();
+    }
+    
     // Valida los avisos de las entidades en sus posiciones adyacentes
     public void agregarAdyacentes(int i, int j, int adver){
         if(i-1 >= 0){ //si Arriba existe
@@ -230,20 +262,64 @@ public class Celda {
         }
     }
     
-    public void guardarPosInicial(int i, int j){
-        mapaMental[i][j].cordX = j;
-        mapaMental[i][j].cordY = i;
-        System.out.println("Mapa Mental - PosActual de 1"
-                + "\nX:  " + mapaMental[i][j].cordX + "\nY: " + mapaMental[i][j].cordY);
+    public void guardarPosInicial(int filas, int columnas){
+        mapaMental[columnas][filas].cordX = columnas; xActual = columnas;
+        mapaMental[columnas][filas].cordY = filas; yActual = filas;
+        //System.out.println("PosActual de Cazador "
+        //+ "X: " + mapaMental[columnas][filas].cordX + ", Y: " + mapaMental[columnas][filas].cordY);
     }
-    /*
-    public void moverDerecha(int x, int y){
-        if(mapaMental[x][y].cordX++  < TAM_TABLERO){ // si Derecha existe
-            mapaMental[x+1][y].cordX++;
-            mapa[x][y].valor = 0;
-            mapa[x+1][y].valor = 1;
-            System.out.println("\nNos movimos a la derecha, siiiii <3");
+    
+    public void imprimirPosActualHunter(){
+        System.out.println("PosActual de Cazador " + "X: " + xActual + ", Y: " + yActual);
+    }
+    
+    public void moverCazador(int sentido){ //arriba = 1, derecha = 2, abajo = 3, izquierda = 4;
+        switch(sentido){
+            case 1:
+                if(yActual-1 >= 0){ // si Arriba existe
+                    System.out.println("yActual: "+ yActual + " yActual-1: " + (yActual-1));
+                    mapa[yActual][xActual].valor = 0;
+                    yActual--;
+                    mapa[yActual][xActual].valor = 1;
+                } else {
+                    System.out.println("Fuera de límites (no es posible moverse arriba)");
+                }
+                break;
+            case 2:
+                if(xActual+1 < TAM_TABLERO){ // si Derecha existe
+                    System.out.println("xActual: "+ xActual + " xActual+1: " + (xActual+1));
+                    mapa[yActual][xActual].valor = 0;
+                    xActual++;
+                    mapa[yActual][xActual].valor = 1;
+                } else {
+                    System.out.println("Fuera de límites (no es posible moverse derecha)");
+                }
+                break;
+            case 3: 
+                if(yActual+1 < TAM_TABLERO){ // si Abajo existe
+                    System.out.println("yActual: "+ yActual + " yActual+1: " + (yActual+1));
+                    mapa[yActual][xActual].valor = 0;
+                    yActual++;
+                    mapa[yActual][xActual].valor = 1;
+                } else {
+                    System.out.println("Fuera de límites (no es posible moverse abajo)");
+                }
+                break;
+            case 4:
+                if(xActual-1 >= 0){ // si Izquierda existe
+                    System.out.println("xActual: "+ xActual + " xActual-1: " + (xActual-1));
+                    mapa[yActual][xActual].valor = 0;
+                    xActual--;
+                    mapa[yActual][xActual].valor = 1;
+                } else {
+                    System.out.println("Fuera de límites (no es posible moverse izquierda)");
+                }
+                break;
+            default:
+                break;
         }
-    }*/
+        
+        imprimirMapa();
+    }
     
 }
