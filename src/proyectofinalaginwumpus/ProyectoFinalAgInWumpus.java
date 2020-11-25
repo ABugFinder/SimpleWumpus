@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package proyectofinalaginwumpus;
-import proyectofinalaginwumpus.Celda;
 
 /**
  *
@@ -17,15 +16,17 @@ public class ProyectoFinalAgInWumpus {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        // MyFrame frame = new MyFrame();
+        MyFrame myFrame = new MyFrame();
+        
         Celda celda = new Celda();
         
         celda.crearMapa();
         celda.moverCazador(4);
         
     }
+    
 }
-
-
 
 /* 
     1.- Crear matriz de n*n. En este caso de 8x8 para testing la matriz debe contener un objeto casilla
