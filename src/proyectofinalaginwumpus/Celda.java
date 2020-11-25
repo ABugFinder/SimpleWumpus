@@ -14,7 +14,7 @@ public class Celda {
     //Variables globales
     private int valor, status, advertencia, cordX, cordY;
     private int contWumpus = 0, contTreasure = 0, contTrap = 0, contHunter = 0;
-    private final int TAM_TABLERO = 6; // Se recomienda valores menores a 100
+    private final int TAM_TABLERO = 5; // Se recomienda valores menores a 100
     private Celda [][] mapa = new Celda [TAM_TABLERO][TAM_TABLERO];
     private Celda [][] mapaMental = new Celda [TAM_TABLERO][TAM_TABLERO];
     

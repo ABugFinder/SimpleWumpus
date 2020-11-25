@@ -22,7 +22,7 @@ public class ProyectoFinalAgInWumpus {
         Celda celda = new Celda();
         
         celda.crearMapa();
-        celda.moverCazador(4);
+        //celda.moverCazador(4);
         
     }
     
