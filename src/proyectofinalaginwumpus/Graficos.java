@@ -26,6 +26,8 @@ public class Graficos extends JPanel implements ActionListener {
     int aCuadrado = 50;
     int tam = 8;
     
+    boolean isDerecha = true;
+    
     Celda mapa[][];
     
     Celda celda = new Celda();
@@ -45,9 +47,20 @@ public class Graficos extends JPanel implements ActionListener {
                 
         mapa = celda.getMapa();
         
-        Timer timer = new Timer(1100, (ActionEvent e) -> {
+        Timer timer = new Timer(1100, (ActionEvent e) -> {/*
 
-            celda.moverCazador(3);
+            if(celda.xActual < tam-1 && isDerecha){
+                celda.moverCazador(2);
+                System.out.println(celda.xActual);
+            } else {
+                isDerecha = false;
+            }
+            if(!isDerecha && celda.xActual > 0){
+                celda.moverCazador(4);
+            } else {
+                isDerecha = true;
+            }*/
+            
             repaint();
         });
        
@@ -153,6 +166,21 @@ public class Graficos extends JPanel implements ActionListener {
         g2D.fillRect(x1, y1, aCuadrado, aCuadrado);
     }
     
+      public void pintarAdvertencia(Graphics g, int x, int y, int tam) {
+        Toolkit t=Toolkit.getDefaultToolkit();  
+        Image image = t.getImage(baseImagePath+"Alerta.png");  
+        
+        g.drawImage(image, x, y, tam, tam, null, this);
+    }
+      
+    public void pintarDestello(Graphics g, int x, int y, int tam) {
+        Toolkit t=Toolkit.getDefaultToolkit();  
+        Image image = t.getImage(baseImagePath+"Destello.png");  
+        
+        g.drawImage(image, x, y, tam, tam, null, this);
+    }
+    
+    
     public void pintarMatriz(Graphics g) {
         // pintarCuadrado(g, xInicial, yInicial);
         for(int j = 0; j < tam ; j++){
@@ -167,7 +195,13 @@ public class Graficos extends JPanel implements ActionListener {
                      pintarTrampa(g, xInicial, yInicial, aCuadrado);
                  } else if(mapa[j][i].valor == 4){
                      pintarWumpus(g, xInicial, yInicial, aCuadrado);
-                 } 
+                 } else if(mapa[i][j].advertencia == 5){
+                     pintarDestello(g, xInicial, yInicial, aCuadrado);
+                 } else if(mapa[i][j].advertencia == 6){
+                     pintarAdvertencia(g, xInicial, yInicial, aCuadrado);
+                 } else if(mapa[i][j].advertencia == 7){
+                     pintarAdvertencia(g, xInicial, yInicial, aCuadrado);
+                 }
                  xInicial += espacio;
              }
              yInicial += espacio;

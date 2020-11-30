@@ -13,9 +13,9 @@ public class Celda {
     
     //Variables globales
     int valor;
-    private int status, advertencia, cordX, cordY;
+    int status, advertencia, cordX, cordY;
     private int contWumpus = 0, contTreasure = 0, contTrap = 0, contHunter = 0;
-    public final int TAM_TABLERO = 8; // Se recomienda valores menores a 100
+    final int TAM_TABLERO = 8; // Se recomienda valores menores a 100
     private Celda [][] mapa = new Celda [TAM_TABLERO][TAM_TABLERO];
     private Celda [][] mapaMental = new Celda [TAM_TABLERO][TAM_TABLERO];
     
@@ -138,7 +138,7 @@ public class Celda {
                     if(contTreasure < N_TREASURE) {
                         mapa [i][j].valor = 2;
                         contTreasure++;
-                        agregarAdyacentes(i,j,5);
+                        agregarAdyacentes(j,i,5);
                     } else if (contTreasure >= N_TREASURE){
                         mapa [i][j].valor = 0;
                     }
@@ -152,7 +152,7 @@ public class Celda {
                     if(contTrap < N_TRAP) {
                         mapa [i][j].valor = 3;
                         contTrap++;
-                        agregarAdyacentes(i,j,6);
+                        agregarAdyacentes(j,i,6);
                     } else if (contTrap >= N_TRAP){
                         mapa [i][j].valor = 0;
                     }
@@ -166,7 +166,7 @@ public class Celda {
                     if(contWumpus <= 0) {
                         mapa [i][j].valor = 4;
                         contWumpus++;
-                        agregarAdyacentes(i, j, 7);
+                        agregarAdyacentes(j, i, 7);
                     } else if (contWumpus >= N_WUMPUS){
                         mapa [i][j].valor = 0;
                     }
