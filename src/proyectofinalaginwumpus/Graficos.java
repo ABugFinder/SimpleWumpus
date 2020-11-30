@@ -17,21 +17,19 @@ import java.util.Arrays;
  */
 public class Graficos extends JPanel implements ActionListener {
     
-    //Timer timer = new Timer(2000, this);
+    //Timer time = new Timer(1100, this);
     int seconds = 0;
+    //int x = 0, y = 0, velX = 3, velY = 1;
     
-    int x = 0, y = 0, velX = 3, velY = 1;
+    int xInicial = 30, yInicial = 30;
+    int aCuadrado = 80;
+    int tam = 6;
     
-    int xInicial = 50, yInicial = 50;
-    int aCuadrado = 50;
-    int tam = 5;
-    
-    boolean isDerecha = true;
+
     
     Celda mapa[][];
     
     Celda celda = new Celda();
-    
     
     int espacio = aCuadrado+15;
     
@@ -47,10 +45,10 @@ public class Graficos extends JPanel implements ActionListener {
                 
         mapa = celda.getMapa();
         
-        Timer timer = new Timer(1100, (ActionEvent e) -> {
+        Timer timer = new Timer(800, (ActionEvent e) -> {
             
             
-            explorarMapa();
+            celda.explorarMapa();
             /*
             if(celda.xActual < tam-1 && isDerecha){
                 celda.moverCazador(2);
@@ -145,7 +143,7 @@ public class Graficos extends JPanel implements ActionListener {
     public void pintarCazador(Graphics g, int x, int y, int tam) {
         Toolkit t=Toolkit.getDefaultToolkit();  
         Image image = t.getImage(baseImagePath+"Cazador.png");  
-        
+
         g.drawImage(image, x, y, tam, tam, null, this);
     }
     
@@ -156,20 +154,24 @@ public class Graficos extends JPanel implements ActionListener {
         g.drawImage(image, x, y, tam, tam, null, this);
     }
      
-      public void pintarTrampa(Graphics g, int x, int y, int tam) {
+    public void pintarTrampa(Graphics g, int x, int y, int tam) {
         Toolkit t=Toolkit.getDefaultToolkit();  
         Image image = t.getImage(baseImagePath+"Trampa.png");  
         
         g.drawImage(image, x, y, tam, tam, null, this);
     }
     
+    Color blanco = new Color(250,250,250);
+    Color verde = new Color(180,250,180);
+    Color azul = new Color(3,80,215);
+    
     public void pintarCuadrado(Graphics g, int x1, int y1) {
         Graphics2D g2D = (Graphics2D) g;
-        g2D.setColor(new Color(250,250,250));
+        g2D.setColor(blanco);
         g2D.fillRect(x1, y1, aCuadrado, aCuadrado);
     }
     
-      public void pintarAdvertencia(Graphics g, int x, int y, int tam) {
+    public void pintarAdvertencia(Graphics g, int x, int y, int tam) {
         Toolkit t=Toolkit.getDefaultToolkit();  
         Image image = t.getImage(baseImagePath+"Alerta.png");  
         
@@ -190,19 +192,19 @@ public class Graficos extends JPanel implements ActionListener {
              for(int i = 0; i < tam; i++){
                  pintarCuadrado(g, xInicial, yInicial);
                  
-                 if(mapa[j][i].valor == 1){
+                 if(mapa[j][i].valor == 1){ // Hay cazador
                      pintarCazador(g, xInicial, yInicial, aCuadrado);
-                 } else if(mapa[j][i].isTesoro){
+                 } else if(mapa[j][i].isTesoro){ // Hay tesoro
                      pintarTesoro(g, xInicial, yInicial, aCuadrado);
-                 } else if(mapa[j][i].isTrampa){
+                 } else if(mapa[j][i].isTrampa){ // Hay trampa
                      pintarTrampa(g, xInicial, yInicial, aCuadrado);
-                 } else if(mapa[j][i].isWumpus){
+                 } else if(mapa[j][i].isWumpus){ // Hay Wumpus
                      pintarWumpus(g, xInicial, yInicial, aCuadrado);
-                 } else if(mapa[i][j].advertencia == 5){
+                 } else if(mapa[i][j].advertencia == 5){ // Hay brillo
                      pintarDestello(g, xInicial, yInicial, aCuadrado);
-                 } else if(mapa[i][j].advertencia == 6){
+                 } else if(mapa[i][j].advertencia == 6){ // Hay viento
                      pintarAdvertencia(g, xInicial, yInicial, aCuadrado);
-                 } else if(mapa[i][j].advertencia == 7){
+                 } else if(mapa[i][j].advertencia == 7){ // Hay hedor
                      pintarAdvertencia(g, xInicial, yInicial, aCuadrado);
                  }
                  xInicial += espacio;
@@ -225,20 +227,6 @@ public class Graficos extends JPanel implements ActionListener {
             mapa[yActual][xActual].valor = 1;
         }
     }*/
-    
-    public void explorarMapa() {
-        if(celda.xActual < tam-1 && isDerecha){
-                celda.moverCazador(2);
-                System.out.println(celda.xActual);
-            } else {
-                isDerecha = false;
-            }
-            if(!isDerecha && celda.xActual > 0){
-                celda.moverCazador(4);
-            } else {
-                isDerecha = true;
-            }
-    }
 
     @Override
     public void actionPerformed(ActionEvent ae) {

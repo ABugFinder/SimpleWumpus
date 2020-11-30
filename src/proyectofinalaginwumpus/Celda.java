@@ -15,7 +15,7 @@ public class Celda {
     int valor;
     int status, advertencia, cordX, cordY;
     private int contWumpus = 0, contTreasure = 0, contTrap = 0, contHunter = 0;
-    final int TAM_TABLERO = 5; // Se recomienda valores menores a 100
+    final int TAM_TABLERO = 6; // Se recomienda valores menores a 100
     private Celda [][] mapa = new Celda [TAM_TABLERO][TAM_TABLERO];
     private Celda [][] mapaMental = new Celda [TAM_TABLERO][TAM_TABLERO];
     
@@ -26,6 +26,12 @@ public class Celda {
     int vidas = 5;
     
     int xActual = 0, yActual = 0;
+    
+    boolean isDerecha = true;
+    boolean isArriba = true;
+    boolean isTop = false, isLeft = false;
+    boolean isZigD = false, isZigA = false, isZigI = false, isLastD = false, isRepZig = false;
+    
     
     // TODO List
     // Guardar en Memoria una matriz del mapa mental
@@ -219,7 +225,7 @@ public class Celda {
     
     public int probailidadDeTrampa() {
         //A mayor rango máximo, mayor cantidad de trampas
-        int probabilidad = setRandomNumber(0, 3);
+        int probabilidad = setRandomNumber(0, 2);
         if(probabilidad >= 1){
             return 1;
         } else {
@@ -256,6 +262,8 @@ public class Celda {
                 mapa [i][j].status = 0;
                 mapa [i][j].advertencia = 0;
                 mapaMental [i][j] = null;
+                isLeft = false;
+                isTop = false;
             }
         }
         crearMapa();
@@ -350,6 +358,121 @@ public class Celda {
         }
         
         imprimirMapa();
+    }
+    
+    public void explorarMapa() {
+        int caso = 0;
+        if(!isTop) caso = 1;
+        if(isTop) caso = 2;
+        
+        /*
+        if(isTop && isLeft) {
+            isZigA = true;
+            caso = 3;
+        }
+        if(isZigD && !isZigA) {
+            caso = 4;
+        }
+        if(isLastD) caso = 3;
+        if(isZigI) caso = 5;
+        if(isRepZig) caso = 3;
+        */
+        
+        if(isTop && isLeft) {
+            isZigA = true;
+            if(isZigA){
+                caso = 3;
+            }
+            
+        }
+        
+        switch(caso){
+            case 1:
+                if(!isTop && yActual != 0){
+                    irArriba();
+                } else if(yActual == 0){
+                    isTop = true;
+                }
+            break;
+            
+            case 2:
+               if(!isLeft && isTop && xActual > 0){
+                    irIzquierda();
+                } else if(xActual == 0){
+                    isLeft = true;
+                }
+            break;
+            
+            case 3:
+                 if(yActual+1 <= 8){
+                    irAbajo();
+                } else {
+                    isZigA = false;
+                    isZigD = true;
+                }
+                break;
+                
+            case 4:
+                irIzquierda();
+                break;
+                
+            case 5:
+                break;
+                
+            case 6:
+                break;
+                
+                default:
+                    System.out.println("");
+        }
+        
+    }
+    
+    public void irArriba(){
+        moverCazador(1);
+    }
+    
+    public void irDerecha(){
+        moverCazador(2);
+    }
+    
+    public void irAbajo(){
+        moverCazador(3);
+    }
+    
+    public void irIzquierda(){
+        moverCazador(4);
+    }
+    
+    public void explorarY(){
+        // Validar movimiento en eje Y
+        if(yActual > 0 && isArriba){
+            moverCazador(1);
+        } else {
+            System.out.println(yActual);
+            isArriba = false;
+        }
+        if(yActual < TAM_TABLERO-1 && !isArriba){
+            moverCazador(3);
+        } else {
+            System.out.println(yActual);
+            isArriba = true;
+        }
+    }
+    
+    public void explorarX(){
+        // Validar movimiento en eje X
+        if(xActual > 0 && !isDerecha){
+            moverCazador(4);
+        } else {
+            isDerecha = true;
+        }
+        if(xActual < TAM_TABLERO && isDerecha){
+            moverCazador(2);
+            System.out.println(xActual);
+        } else {
+            isDerecha = false;
+        }
     }
     
 }

@@ -29,7 +29,7 @@ public class MyFrame extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(true);
         // this.setLayout(null);
-        this.setSize(750, 750);
+        this.setSize(870, 890);
         
         this.add(graficos);
         
