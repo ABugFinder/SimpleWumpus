@@ -15,9 +15,11 @@ public class Celda {
     int valor;
     int status, advertencia, cordX, cordY;
     private int contWumpus = 0, contTreasure = 0, contTrap = 0, contHunter = 0;
-    final int TAM_TABLERO = 8; // Se recomienda valores menores a 100
+    final int TAM_TABLERO = 5; // Se recomienda valores menores a 100
     private Celda [][] mapa = new Celda [TAM_TABLERO][TAM_TABLERO];
     private Celda [][] mapaMental = new Celda [TAM_TABLERO][TAM_TABLERO];
+    
+    boolean isWumpus = false; boolean isTrampa = false; boolean isTesoro= false;
     
     double mitadTablero = Math.pow(TAM_TABLERO, TAM_TABLERO)/2;
     final int N_WUMPUS = 1, N_TREASURE = 1, N_TRAP = (int)mitadTablero, N_HUNTER = 1;
@@ -33,13 +35,16 @@ public class Celda {
     // Asignar vidas = 5
     
     //Constructor
-    public Celda(int valor, int status, int advertencia, int cordX, int cordY) {
+    public Celda(int valor, int status, int advertencia, int cordX, int cordY, boolean isWumpus, boolean isTrampa, boolean isTesoro)  {
         //Vacío = 0, Cazador = 1, Tesoro = 2, Hoyo = 3, Wumpus 4, Brillo = 5, Viento = 6, Hedor = 7
         this.valor = valor; 
         this.status = status; //Descubierto = 1, No decubierto = 0
         this.advertencia = advertencia;
         this.cordX = cordX;
         this.cordY = cordY;
+        this.isWumpus = isWumpus;
+        this.isTrampa = isTrampa;
+        this.isTesoro = isTesoro;
     }
     
     public Celda(){}
@@ -47,8 +52,8 @@ public class Celda {
     public void crearCeldas(){
         for(int i = 0; i < TAM_TABLERO; i++){
             for(int j = 0; j < TAM_TABLERO; j++){
-                mapa [i][j] = new Celda(setRandomNumber(0, 5), 0, 0,i,j);
-                mapaMental [i][j] = new Celda(0, 0, 0, 0, 0);
+                mapa [i][j] = new Celda(setRandomNumber(0, 5), 0, 0,i,j,false,false,false);
+                mapaMental [i][j] = new Celda(0, 0, 0, 0, 0,false,false,false);
             }
         }
     }
@@ -137,6 +142,7 @@ public class Celda {
                 if(probailidadDeEntidad() == 1) {
                     if(contTreasure < N_TREASURE) {
                         mapa [i][j].valor = 2;
+                        mapa [i][j].isTesoro = true;
                         contTreasure++;
                         agregarAdyacentes(j,i,5);
                     } else if (contTreasure >= N_TREASURE){
@@ -151,6 +157,7 @@ public class Celda {
                 if(probailidadDeTrampa() == 1) {
                     if(contTrap < N_TRAP) {
                         mapa [i][j].valor = 3;
+                        mapa [i][j].isTrampa = true;
                         contTrap++;
                         agregarAdyacentes(j,i,6);
                     } else if (contTrap >= N_TRAP){
@@ -165,6 +172,7 @@ public class Celda {
                 if (probailidadDeEntidad() == 1) {
                     if(contWumpus <= 0) {
                         mapa [i][j].valor = 4;
+                        mapa [i][j].isWumpus = true;
                         contWumpus++;
                         agregarAdyacentes(j, i, 7);
                     } else if (contWumpus >= N_WUMPUS){

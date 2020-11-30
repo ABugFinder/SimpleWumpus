@@ -24,7 +24,7 @@ public class Graficos extends JPanel implements ActionListener {
     
     int xInicial = 50, yInicial = 50;
     int aCuadrado = 50;
-    int tam = 8;
+    int tam = 5;
     
     boolean isDerecha = true;
     
@@ -47,8 +47,11 @@ public class Graficos extends JPanel implements ActionListener {
                 
         mapa = celda.getMapa();
         
-        Timer timer = new Timer(1100, (ActionEvent e) -> {/*
-
+        Timer timer = new Timer(1100, (ActionEvent e) -> {
+            
+            
+            explorarMapa();
+            /*
             if(celda.xActual < tam-1 && isDerecha){
                 celda.moverCazador(2);
                 System.out.println(celda.xActual);
@@ -189,11 +192,11 @@ public class Graficos extends JPanel implements ActionListener {
                  
                  if(mapa[j][i].valor == 1){
                      pintarCazador(g, xInicial, yInicial, aCuadrado);
-                 } else if(mapa[j][i].valor == 2){
+                 } else if(mapa[j][i].isTesoro){
                      pintarTesoro(g, xInicial, yInicial, aCuadrado);
-                 } else if(mapa[j][i].valor == 3){
+                 } else if(mapa[j][i].isTrampa){
                      pintarTrampa(g, xInicial, yInicial, aCuadrado);
-                 } else if(mapa[j][i].valor == 4){
+                 } else if(mapa[j][i].isWumpus){
                      pintarWumpus(g, xInicial, yInicial, aCuadrado);
                  } else if(mapa[i][j].advertencia == 5){
                      pintarDestello(g, xInicial, yInicial, aCuadrado);
@@ -222,6 +225,20 @@ public class Graficos extends JPanel implements ActionListener {
             mapa[yActual][xActual].valor = 1;
         }
     }*/
+    
+    public void explorarMapa() {
+        if(celda.xActual < tam-1 && isDerecha){
+                celda.moverCazador(2);
+                System.out.println(celda.xActual);
+            } else {
+                isDerecha = false;
+            }
+            if(!isDerecha && celda.xActual > 0){
+                celda.moverCazador(4);
+            } else {
+                isDerecha = true;
+            }
+    }
 
     @Override
     public void actionPerformed(ActionEvent ae) {
