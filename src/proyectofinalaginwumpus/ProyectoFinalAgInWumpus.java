@@ -18,11 +18,12 @@ public class ProyectoFinalAgInWumpus {
         // TODO code application logic here
         // MyFrame frame = new MyFrame();
         MyFrame myFrame = new MyFrame();
-        
+        /*
         Celda celda = new Celda();
         
         celda.crearMapa();
-        //celda.moverCazador(4);
+        celda.moverCazador(4);
+        */
         
     }
     

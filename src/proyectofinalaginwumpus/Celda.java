@@ -12,9 +12,10 @@ package proyectofinalaginwumpus;
 public class Celda {
     
     //Variables globales
-    private int valor, status, advertencia, cordX, cordY;
+    int valor;
+    private int status, advertencia, cordX, cordY;
     private int contWumpus = 0, contTreasure = 0, contTrap = 0, contHunter = 0;
-    private final int TAM_TABLERO = 5; // Se recomienda valores menores a 100
+    public final int TAM_TABLERO = 8; // Se recomienda valores menores a 100
     private Celda [][] mapa = new Celda [TAM_TABLERO][TAM_TABLERO];
     private Celda [][] mapaMental = new Celda [TAM_TABLERO][TAM_TABLERO];
     
@@ -27,7 +28,7 @@ public class Celda {
     // TODO List
     // Guardar en Memoria una matriz del mapa mental
     // Funcionar normal
-    // Huerística
+    // Heurística
     // Cuando acabe, trazar una ruta óptima que sea paralela al resultado (a estrella)
     // Asignar vidas = 5
     
@@ -62,14 +63,16 @@ public class Celda {
         //Validar mapa por si no fue correctamente construido
         if(contHunter==0 || contTreasure == 0 || contWumpus == 0){
             resetearPartida();
-            //imprimirMapa();
-            //imprimirDatos();
             //System.out.println("Se reinició el mapa");
         } else {
             imprimirMapa();
             imprimirDatos();
         }
         imprimirPosActualHunter();
+    }
+    
+    public Celda[][] getMapa() {
+        return mapa;
     }
     
     public void controlarHunter(){
@@ -81,11 +84,11 @@ public class Celda {
     
     public void imprimirDatos(){
         System.out.println("-----------------------\n"
-                    + "Espacio libre = 0\n"
-                    + "Cazador = 1\n"
-                    + "Tesoro = 2\n"
-                    + "Trampa = 3\n"
-                    + "Monstruo = 4\n-----------------------");
+            + "Espacio libre = 0\n"
+            + "Cazador = 1\n"
+            + "Tesoro = 2\n"
+            + "Trampa = 3\n"
+            + "Monstruo = 4\n-----------------------");
             System.out.println("Cazadores: " + contHunter + "\n"
             + "Wumpus: " + contWumpus + "\n"
             + "Tesoros: " + contTreasure + "\n"
@@ -179,6 +182,18 @@ public class Celda {
         }
     }
     
+   /*public Celda[][] getMapa() {
+        Celda newArr[][] = null;
+        //newArr = new Celda[][];
+        for(int i=0; i< mapa.length; i++) {
+            for(int j=0; j< mapa.length; j++) {
+                newArr[i][j].valor = mapa[i][j].valor;
+            }
+        }
+        return newArr;
+    }*/
+   
+    
     public int setRandomNumber(int min, int max) {
         return (int) ((Math.random() * (max - min)) + min);
     }
@@ -223,7 +238,8 @@ public class Celda {
         }
     }
     */
-    public void resetearPartida(){
+    
+    public void resetearPartida() {
         contWumpus = 0; contTreasure = 0; contTrap = 0; contHunter = 0;
         xActual = 0; yActual = 0;
         for(int i = 0; i < TAM_TABLERO; i++){
@@ -238,7 +254,7 @@ public class Celda {
     }
     
     // Valida los avisos de las entidades en sus posiciones adyacentes
-    public void agregarAdyacentes(int i, int j, int adver){
+    public void agregarAdyacentes(int i, int j, int adver) {
         if(i-1 >= 0){ //si Arriba existe
             //System.out.println("antes: " + mapa[i-1][j].valor);
             //mapa[i-1][j].valor = adver;
@@ -246,17 +262,17 @@ public class Celda {
             //System.out.println("después: " + mapa[i-1][j].valor);
         }
 
-        if(i+1 < TAM_TABLERO){ //si Abajo existe
+        if(i+1 < TAM_TABLERO) { //si Abajo existe
             //mapa[i+1][j].valor = adver;
             mapa[i+1][j].advertencia = adver;
         }
 
-        if(j-1 >= 0){ // si Izquierda existe
+        if(j-1 >= 0) { // si Izquierda existe
             //mapa[i][j-1].valor = adver;
             mapa[i][j-1].advertencia = adver;
         }
 
-        if(j+1 < TAM_TABLERO){ // si Derecha existe
+        if(j+1 < TAM_TABLERO) { // si Derecha existe
             //mapa[i][j+1].valor = adver;
             mapa[i][j+1].advertencia = adver;
         }
@@ -269,14 +285,20 @@ public class Celda {
         //+ "X: " + mapaMental[columnas][filas].cordX + ", Y: " + mapaMental[columnas][filas].cordY);
     }
     
-    public void imprimirPosActualHunter(){
+    public void imprimirPosActualHunter() {
         System.out.println("PosActual de Cazador " + "X: " + xActual + ", Y: " + yActual);
     }
     
-    public void moverCazador(int sentido){ //arriba = 1, derecha = 2, abajo = 3, izquierda = 4;
+    public void canMove(int sentido) {
+        switch(sentido){
+            
+        }
+    }
+    
+    public void moverCazador(int sentido) { //arriba = 1, derecha = 2, abajo = 3, izquierda = 4;
         switch(sentido){
             case 1:
-                if(yActual-1 >= 0){ // si Arriba existe
+                if(yActual-1 >= 0) { // si Arriba existe
                     System.out.println("yActual: "+ yActual + " yActual-1: " + (yActual-1));
                     mapa[yActual][xActual].valor = 0;
                     yActual--;
@@ -286,7 +308,7 @@ public class Celda {
                 }
                 break;
             case 2:
-                if(xActual+1 < TAM_TABLERO){ // si Derecha existe
+                if(xActual+1 < TAM_TABLERO) { // si Derecha existe
                     System.out.println("xActual: "+ xActual + " xActual+1: " + (xActual+1));
                     mapa[yActual][xActual].valor = 0;
                     xActual++;
@@ -296,7 +318,7 @@ public class Celda {
                 }
                 break;
             case 3: 
-                if(yActual+1 < TAM_TABLERO){ // si Abajo existe
+                if(yActual+1 < TAM_TABLERO) { // si Abajo existe
                     System.out.println("yActual: "+ yActual + " yActual+1: " + (yActual+1));
                     mapa[yActual][xActual].valor = 0;
                     yActual++;
@@ -306,7 +328,7 @@ public class Celda {
                 }
                 break;
             case 4:
-                if(xActual-1 >= 0){ // si Izquierda existe
+                if(xActual-1 >= 0) { // si Izquierda existe
                     System.out.println("xActual: "+ xActual + " xActual-1: " + (xActual-1));
                     mapa[yActual][xActual].valor = 0;
                     xActual--;
