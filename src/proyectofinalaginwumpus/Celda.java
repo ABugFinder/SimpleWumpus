@@ -128,8 +128,6 @@ public class Celda {
     // mejor manera para la generación del mapa
     public void rellenarEntidades(int i, int j){
         switch (mapa[i][j].valor) {
-            case 0: break;
-            
             case 1: // Limitando Cazador
                 if(probailidadDeEntidad() == 1){
                     if(contHunter < N_HUNTER) {
@@ -196,18 +194,6 @@ public class Celda {
         }
     }
     
-   /*public Celda[][] getMapa() {
-        Celda newArr[][] = null;
-        //newArr = new Celda[][];
-        for(int i=0; i< mapa.length; i++) {
-            for(int j=0; j< mapa.length; j++) {
-                newArr[i][j].valor = mapa[i][j].valor;
-            }
-        }
-        return newArr;
-    }*/
-   
-    
     public int setRandomNumber(int min, int max) {
         return (int) ((Math.random() * (max - min)) + min);
     }
@@ -232,26 +218,6 @@ public class Celda {
             return 0;
         }
     }
-    
-    // Crea un nuevo mapa en caso de haberse generado mal
-    /*
-    public void validarEntedadesPerdidas(int entidad){
-        // Si no existe un hunter se seteará un mapa específico
-        if (entidad == 1 && contHunter == 0){ // Caso sin cazador
-            //Funcion para borrar matriz y crear un nuevo mapa
-            System.out.println("Mapa Nuevo - Hunter Validado");
-            resetearPartida();
-        } else
-        if (entidad == 2 && contTreasure == 0){ // Caso sin tesoro
-            System.out.println("Mapa Nuevo - Tesoro Validado");
-            resetearPartida();
-        } else 
-        if (entidad == 4 && contWumpus == 0){ // Caso sin wumpus
-            System.out.println("Mapa Nuevo - Wumpus Validado");
-            resetearPartida();
-        }
-    }
-    */
     
     public void resetearPartida() {
         contWumpus = 0; contTreasure = 0; contTrap = 0; contHunter = 0;
@@ -303,12 +269,6 @@ public class Celda {
     
     public void imprimirPosActualHunter() {
         System.out.println("PosActual de Cazador " + "X: " + xActual + ", Y: " + yActual);
-    }
-    
-    public void canMove(int sentido) {
-        switch(sentido){
-            
-        }
     }
     
     public void moverCazador(int sentido) { //arriba = 1, derecha = 2, abajo = 3, izquierda = 4;
