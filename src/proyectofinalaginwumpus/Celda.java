@@ -13,7 +13,7 @@ public class Celda {
     
     //Variables globales
     int valor;
-    int status, advertencia, cordX, cordY;
+    int status, advertencia, cordX, cordY, h;
     private int contWumpus = 0, contTreasure = 0, contTrap = 0, contHunter = 0;
     final int TAM_TABLERO = 6; // Se recomienda valores menores a 100
     private Celda [][] mapa = new Celda [TAM_TABLERO][TAM_TABLERO];
@@ -26,10 +26,13 @@ public class Celda {
     int vidas = 5;
     
     int xActual = 0, yActual = 0;
+    int xTesoro = 0, yTesoro = 0;
+    
+    int contMov  = 0;
     
     boolean isDerecha = true;
     boolean isArriba = true;
-    boolean isTop = false, isLeft = false;
+    boolean isTop = false, isLeft = false, isBotom = false;
     boolean isZigD = false, isZigA = false, isZigI = false, isLastD = false, isRepZig = false;
     
     
@@ -41,7 +44,8 @@ public class Celda {
     // Asignar vidas = 5
     
     //Constructor
-    public Celda(int valor, int status, int advertencia, int cordX, int cordY, boolean isWumpus, boolean isTrampa, boolean isTesoro)  {
+    public Celda(int valor, int status, int advertencia, int cordX, int cordY, 
+                           boolean isWumpus, boolean isTrampa, boolean isTesoro, int h)  {
         //Vacío = 0, Cazador = 1, Tesoro = 2, Hoyo = 3, Wumpus 4, Brillo = 5, Viento = 6, Hedor = 7
         this.valor = valor; 
         this.status = status; //Descubierto = 1, No decubierto = 0
@@ -51,6 +55,7 @@ public class Celda {
         this.isWumpus = isWumpus;
         this.isTrampa = isTrampa;
         this.isTesoro = isTesoro;
+        this.h = h;
     }
     
     public Celda(){}
@@ -58,8 +63,8 @@ public class Celda {
     public void crearCeldas(){
         for(int i = 0; i < TAM_TABLERO; i++){
             for(int j = 0; j < TAM_TABLERO; j++){
-                mapa [i][j] = new Celda(setRandomNumber(0, 5), 0, 0,i,j,false,false,false);
-                mapaMental [i][j] = new Celda(0, 0, 0, 0, 0,false,false,false);
+                mapa [i][j] = new Celda(setRandomNumber(0, 5), 0, 0,i,j,false,false,false, -1);
+                mapaMental [i][j] = new Celda(0, 0, 0, 0, 0,false,false,false,-1);
             }
         }
     }
@@ -80,6 +85,17 @@ public class Celda {
             imprimirDatos();
         }
         imprimirPosActualHunter();
+        asignarH();
+    }
+    
+    public void asignarH(){
+        for(int i = 0; i < TAM_TABLERO; i++){
+            for(int j = 0; j < TAM_TABLERO; j++){
+                //Resta absoluta entre ejes X y Y respecto a una celda y el tesoro
+                mapa[i][j].h = Math.abs(xTesoro-i) + Math.abs(yTesoro-j);
+                System.out.println("H vale: " + mapa[i][j].h);
+            }
+        }
     }
     
     public Celda[][] getMapa() {
@@ -147,6 +163,7 @@ public class Celda {
                     if(contTreasure < N_TREASURE) {
                         mapa [i][j].valor = 2;
                         mapa [i][j].isTesoro = true;
+                        guardarTesoro(i,j);
                         contTreasure++;
                         agregarAdyacentes(j,i,5);
                     } else if (contTreasure >= N_TREASURE){
@@ -194,6 +211,11 @@ public class Celda {
         }
     }
     
+    public void guardarTesoro(int x, int y){
+        xTesoro = x;
+        yTesoro = y;
+    }
+    
     public int setRandomNumber(int min, int max) {
         return (int) ((Math.random() * (max - min)) + min);
     }
@@ -211,8 +233,8 @@ public class Celda {
     
     public int probailidadDeTrampa() {
         //A mayor rango máximo, mayor cantidad de trampas
-        int probabilidad = setRandomNumber(0, 2);
-        if(probabilidad >= 1){
+        int probabilidad = setRandomNumber(0, 5);
+        if(probabilidad == 1){
             return 1;
         } else {
             return 0;
@@ -230,6 +252,12 @@ public class Celda {
                 mapaMental [i][j] = null;
                 isLeft = false;
                 isTop = false;
+                isZigA = false;
+                isZigD = false;
+                isZigI = false;
+                //isArriba = false;
+                isBotom = false;
+                contMov = 0;
             }
         }
         crearMapa();
@@ -314,14 +342,15 @@ public class Celda {
                 }
                 break;
             default:
+                System.out.println("Solo se permiten valores 1-4");
                 break;
         }
-        
         imprimirMapa();
     }
     
     public void explorarMapa() {
         int caso = 0;
+        
         if(!isTop) caso = 1;
         if(isTop) caso = 2;
         
@@ -338,10 +367,25 @@ public class Celda {
         if(isRepZig) caso = 3;
         */
         
+        if(yActual == TAM_TABLERO-1){
+            isBotom = true;
+            //System.out.println("Ya tope con el fondo");
+        }
+        /*
+        if(isBotom && is)
+            if(contMov == 1){
+                caso = 5;
+                contMov = 0;
+            }
+        */
         if(isTop && isLeft) {
             isZigA = true;
             if(isZigA){
                 caso = 3;
+            }
+            
+            if(isBotom){
+                caso = 4;
             }
             
         }
@@ -364,19 +408,22 @@ public class Celda {
             break;
             
             case 3:
-                 if(yActual+1 <= 8){
+                if(!isBotom){
                     irAbajo();
-                } else {
-                    isZigA = false;
-                    isZigD = true;
+                    //System.out.println("Estoy bajando");
+                    System.out.println(yActual);
                 }
                 break;
                 
             case 4:
-                irIzquierda();
+                if(contMov < 1){
+                    irDerecha();
+                }
+                //System.out.println("Saludos " + contMov);
                 break;
                 
             case 5:
+                irArriba();
                 break;
                 
             case 6:
@@ -385,7 +432,6 @@ public class Celda {
                 default:
                     System.out.println("");
         }
-        
     }
     
     public void irArriba(){

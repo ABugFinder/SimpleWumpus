@@ -20,23 +20,16 @@ public class Graficos extends JPanel implements ActionListener {
     //Timer time = new Timer(1100, this);
     int seconds = 0;
     //int x = 0, y = 0, velX = 3, velY = 1;
-    
     int xInicial = 30, yInicial = 30;
     int aCuadrado = 80;
     int tam = 6;
-    
+    int espacio = aCuadrado+15;
 
-    
     Celda mapa[][];
-    
     Celda celda = new Celda();
     
-    int espacio = aCuadrado+15;
-    
     JButton reiniciarBtn = new JButton("Reiniciar");
-    
     JLabel imagen;
-    
     String baseImagePath = "src/proyectofinalaginwumpus/";
 
     public Graficos() {
@@ -45,23 +38,10 @@ public class Graficos extends JPanel implements ActionListener {
                 
         mapa = celda.getMapa();
         
-        Timer timer = new Timer(800, (ActionEvent e) -> {
+        Timer timer = new Timer(400, (ActionEvent e) -> {
             
             
             celda.explorarMapa();
-            /*
-            if(celda.xActual < tam-1 && isDerecha){
-                celda.moverCazador(2);
-                System.out.println(celda.xActual);
-            } else {
-                isDerecha = false;
-            }
-            if(!isDerecha && celda.xActual > 0){
-                celda.moverCazador(4);
-            } else {
-                isDerecha = true;
-            }*/
-            
             repaint();
         });
        
@@ -73,18 +53,7 @@ public class Graficos extends JPanel implements ActionListener {
        x+=velX;*/
        
         timer.start();
-        /*imagen = new JLabel(new ImageIcon("src/proyectofinalaginwumpus/Cazador.png"));
-        imagen.setSize(aCuadrado, aCuadrado);
-        imagen.setLocation(200, 200);
-        this.setLayout(null);
-        add(imagen);*/
-        
-        //celda.imprimirDatos();
-        
-        //System.out.println(Arrays.toString(celda.getMapa()));
-        
-        //reiniciarBtn.setLayout(null);
-        //reiniciarBtn.setBounds(200, 200, 0, 0);
+
         reiniciarBtn.setFocusable(false);
         reiniciarBtn.setBackground(new Color(190,190,190));
         this.add(reiniciarBtn);
@@ -105,8 +74,6 @@ public class Graficos extends JPanel implements ActionListener {
        // pintarCirculoAmarillo(g);
         
         pintarMatriz(g);
-        
-        //pintarCazador(g);
     }
     /*
     public void pintarCirculoAmarillo(Graphics g) {
@@ -214,19 +181,6 @@ public class Graficos extends JPanel implements ActionListener {
          }
         yInicial = 50;
     }
-    /*
-    public void gerPosActual(){
-        mapa = celda.
-    }
-    
-    public void moverAgente(){
-         if(mapa.  >= 0) { // si Arriba existe
-            System.out.println("yActual: "+ yActual + " yActual-1: " + (yActual-1));
-            mapa[yActual][xActual].valor = 0;
-            yActual--;
-            mapa[yActual][xActual].valor = 1;
-        }
-    }*/
 
     @Override
     public void actionPerformed(ActionEvent ae) {
