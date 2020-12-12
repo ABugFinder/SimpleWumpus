@@ -22,7 +22,7 @@ public class Graficos extends JPanel implements ActionListener {
     //int x = 0, y = 0, velX = 3, velY = 1;
     int xInicial = 30, yInicial = 30;
     int aCuadrado = 80;
-    int tam = 6;
+    int tam = 8;
     int espacio = aCuadrado+15;
 
     Celda mapa[][];
@@ -39,9 +39,7 @@ public class Graficos extends JPanel implements ActionListener {
         mapa = celda.getMapa();
         
         Timer timer = new Timer(400, (ActionEvent e) -> {
-            
-            
-            celda.explorarMapa();
+            celda.explorarMapa2();
             repaint();
         });
        
@@ -158,14 +156,14 @@ public class Graficos extends JPanel implements ActionListener {
         for(int j = 0; j < tam ; j++){
              for(int i = 0; i < tam; i++){
                  pintarCuadrado(g, xInicial, yInicial);
-                 
-                 if(mapa[j][i].valor == 1){ // Hay cazador
+
+                 if(mapa[j][i].isPlayer){ // Hay cazador
                      pintarCazador(g, xInicial, yInicial, aCuadrado);
-                 } else if(mapa[j][i].isTesoro){ // Hay tesoro
+                 } else if(mapa[i][j].isTesoro){ // Hay tesoro
                      pintarTesoro(g, xInicial, yInicial, aCuadrado);
-                 } else if(mapa[j][i].isTrampa){ // Hay trampa
+                 } else if(mapa[i][j].isTrampa){ // Hay trampa
                      pintarTrampa(g, xInicial, yInicial, aCuadrado);
-                 } else if(mapa[j][i].isWumpus){ // Hay Wumpus
+                 } else if(mapa[i][j].isWumpus){ // Hay Wumpus
                      pintarWumpus(g, xInicial, yInicial, aCuadrado);
                  } else if(mapa[i][j].advertencia == 5){ // Hay brillo
                      pintarDestello(g, xInicial, yInicial, aCuadrado);
